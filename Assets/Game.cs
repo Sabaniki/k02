@@ -37,7 +37,7 @@ public sealed class Game : GameBase {
     /// </summary>
     public override void UpdateGame() {
         // 起動からの経過時間を取得します
-        if ( /*gc.GetPointerFrameCount(0) == 1 && */!cardGenerator.IsComplete) {
+        if (gc.GetPointerFrameCount(0) == 1 && !cardGenerator.IsComplete) {
             cardName = cardGenerator.DrawCard() ?? "no card";
         }
 
@@ -70,28 +70,25 @@ public sealed class Game : GameBase {
 
 public class CardGenerator {
     private readonly Dictionary<string, float> cardNamesAndRarity;
-    public readonly List<string> cardNames;
     public int Money { private set; get; }
     public bool IsComplete { private set; get; }
     public readonly Dictionary<string, int> CardHistory;
 
     public CardGenerator(int initMoney = 10000) {
         cardNamesAndRarity = new Dictionary<string, float> {
-            {"A", 0.05f}, {"B", 0.05f}, {"C", 0.05f}, {"D", 0.05f}, {"E", 0.05f},
-            {"F", 0.15f}, {"G", 0.15f}, {"H", 0.15f}, {"I", 0.15f}, {"J", 0.15f}
+            {"LR", 0.01f}, {"UR", 0.05f}, {"SSR", 0.075f}, {"SR", 0.10f}, {"HR", 0.15f},
+            {"R", 0.20f}, {"HN", 0.25f}, {"N", 0.165f}
         };
-        cardNames = new List<string>();
         IsComplete = false;
         Money = initMoney;
         CardHistory = new Dictionary<string, int>();
         foreach (var cardName in cardNamesAndRarity.Keys) {
-            cardNames.Add(cardName);
             CardHistory.Add(cardName, 0);
         }
     }
-    
+
     [CanBeNull]
-    private string Choose(){
+    private string Choose() {
         var total = cardNamesAndRarity.Sum(elem => elem.Value);
         var randomPoint = Random.value * total;
         foreach (var elem in cardNamesAndRarity) {
@@ -100,6 +97,7 @@ public class CardGenerator {
             else
                 return elem.Key;
         }
+
         return null;
     }
 
@@ -110,7 +108,9 @@ public class CardGenerator {
         var cardName = Choose();
         if (cardName == null) return null;
         CardHistory[cardName]++;
-        IsComplete = CardHistory.Values.All(count => count > 0);
+        IsComplete = CardHistory
+            .Where(pair => pair.Key == "LR" || pair.Key == "UR")
+            .Any(pair => pair.Value >= 2);
         return cardName;
     }
 }
