@@ -17,6 +17,11 @@ public sealed class Game : GameBase {
     private CardGenerator cardGenerator;
     public string cardName;
 
+    private readonly Dictionary<string, float> cardNamesAndRarity = new Dictionary<string, float> {
+        {"LR", 0.01f}, {"UR", 0.05f}, {"SSR", 0.075f}, {"SR", 0.10f}, {"HR", 0.15f},
+        {"R", 0.20f}, {"HN", 0.25f}, {"N", 0.165f}
+    };
+
     /// <summary>
     /// 初期化処理
     /// </summary>
@@ -27,7 +32,7 @@ public sealed class Game : GameBase {
     private void ResetValues() {
         // キャンバスの大きさを設定します
         gc.SetResolution(720, 1280);
-        cardGenerator = new CardGenerator();
+        cardGenerator = new CardGenerator(cardNamesAndRarity);
         cardName = "";
     }
 
@@ -74,11 +79,8 @@ public class CardGenerator {
     public bool IsComplete { private set; get; }
     public readonly Dictionary<string, int> CardHistory;
 
-    public CardGenerator(int initMoney = 10000) {
-        cardNamesAndRarity = new Dictionary<string, float> {
-            {"LR", 0.01f}, {"UR", 0.05f}, {"SSR", 0.075f}, {"SR", 0.10f}, {"HR", 0.15f},
-            {"R", 0.20f}, {"HN", 0.25f}, {"N", 0.165f}
-        };
+    public CardGenerator(Dictionary<string, float> cardNamesAndRarity ,int initMoney = 10000) {
+        this.cardNamesAndRarity = cardNamesAndRarity;
         IsComplete = false;
         Money = initMoney;
         CardHistory = new Dictionary<string, int>();
