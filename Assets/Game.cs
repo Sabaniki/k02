@@ -18,8 +18,10 @@ public sealed class Game : GameBase {
     public string cardName;
 
     private readonly Dictionary<string, float> cardNamesAndRarity = new Dictionary<string, float> {
-        {"LR", 0.01f}, {"UR", 0.05f}, {"SSR", 0.075f}, {"SR", 0.10f}, {"HR", 0.15f},
-        {"R", 0.20f}, {"HN", 0.25f}, {"N", 0.165f}
+        // {"LR", 0.01f}, {"UR", 0.05f}, {"SSR", 0.075f}, {"SR", 0.10f}, {"HR", 0.15f},
+        // {"R", 0.20f}, {"HN", 0.25f}, {"N", 0.165f}
+        {"A", 0.05f}, {"B", 0.05f}, {"C", 0.05f}, {"D", 0.05f}, {"E", 0.05f}, {"F", 0.15f}, {"G", 0.15f}, {"H", 0.15f},
+        {"I", 0.15f}, {"J", 0.15f},
     };
 
     /// <summary>
@@ -79,7 +81,7 @@ public class CardGenerator {
     public bool IsComplete { private set; get; }
     public readonly Dictionary<string, int> CardHistory;
 
-    public CardGenerator(Dictionary<string, float> cardNamesAndRarity ,int initMoney = 10000) {
+    public CardGenerator(Dictionary<string, float> cardNamesAndRarity, int initMoney = 10000) {
         this.cardNamesAndRarity = cardNamesAndRarity;
         IsComplete = false;
         Money = initMoney;
@@ -111,8 +113,9 @@ public class CardGenerator {
         if (cardName == null) return null;
         CardHistory[cardName]++;
         IsComplete = CardHistory
-            .Where(pair => pair.Key == "LR" || pair.Key == "UR")
-            .Any(pair => pair.Value >= 2);
+            // .Where(pair => pair.Key == "LR" || pair.Key == "UR")
+            .Where(pair => pair.Key == "A" || pair.Key == "B" || pair.Key == "C" || pair.Key == "D" || pair.Key == "E")
+            .Any(pair => pair.Value >= 5);
         return cardName;
     }
 }
