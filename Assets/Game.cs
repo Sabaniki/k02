@@ -8,22 +8,25 @@ using Sequence = System.Collections.IEnumerator;
 /// </summary>
 public sealed class Game : GameBase {
     // 変数の宣言
-    int sec = 0;
     private CardGenerator cardGenerator;
+    public string cardName;
 
     /// <summary>
     /// 初期化処理
     /// </summary>
     public override void InitGame() {
+        ResetValues();
+    }
+
+    private void ResetValues() {
         // キャンバスの大きさを設定します
         gc.SetResolution(720, 1280);
         cardGenerator = new CardGenerator(
             new List<string> {
-                "A", "B", "C", "D", "E", "F", "G", "H", "I"
+                "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"
             });
+        cardName = "";
     }
-
-    public string cardName;
 
 
     /// <summary>
@@ -31,10 +34,12 @@ public sealed class Game : GameBase {
     /// </summary>
     public override void UpdateGame() {
         // 起動からの経過時間を取得します
-        sec = (int) gc.TimeSinceStartup;
-
         if (gc.GetPointerFrameCount(0) == 1 && !cardGenerator.IsComplete) {
             cardName = cardGenerator.DrawCard();
+        }
+        
+        if (gc.GetPointerFrameCount(0) >= 120) {
+            ResetValues();
         }
     }
 
@@ -51,8 +56,8 @@ public sealed class Game : GameBase {
 
         foreach (var (item, index) in cardGenerator.CardHistory.Select((item, index) => (item, index)))
             gc.DrawString($"{item.Key}: {item.Value.ToString()}", 60, 120 + index * 40);
-        
-        if (cardGenerator.IsComplete) 
+
+        if (cardGenerator.IsComplete)
             gc.DrawString("complete!!", 60, 520);
     }
 }
@@ -63,7 +68,7 @@ public class CardGenerator {
     public int Money { private set; get; }
     public bool IsComplete { private set; get; }
     public readonly IDictionary<string, int> CardHistory;
-    
+
     public CardGenerator(List<string> cardNames, int initMoney = 10000) {
         this.cardNames = cardNames;
         IsComplete = false;
